@@ -1,0 +1,84 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+    <script type='text/babel'>
+        class Gugudan extends React.Component{
+            constructor(props){
+                super(props);
+                console.log('props');
+                this.state = {
+                        first:Math.ceil(Math.random() * 9 ),
+                        second:Math.ceil(Math.random() * 9 ),
+                        value : '',
+                        result : ''
+                }
+            }    
+            
+
+        // 데이터가 변경 될때마다 render 함수가 실행 되므로 함수정의는 밖으로 빼주는게 좋음 
+        onSubmit = (e) => {
+            console.log('onSubmit');
+            e.preventDefault();
+            // setState 내부에 함수를 넣어 줌으로서 이전값을 세팅할수 있다. (setState 값 안에 this 를 사용하면 이런식으로 사용한다고 생각하자)
+            // setState 가 비동기 함수 이므로 만약 setState 로 순차적인 계산을 하였을떄 원하는 값이 안나올수 있기 때문에 함수를 넣어서 이전 값을 사용할수 있도록 한다.
+            if(this.state.value === this.state.first * this.state.second){
+                this.setState((prevData) => {return {
+                    result : prevData.value + ' 정답',
+                    first:Math.ceil(Math.random() * 9 ),
+                    second:Math.ceil(Math.random() * 9 ),
+                    value : ''
+                 }});
+                 this.input.focus(); 
+            }else{
+                this.setState({
+                    result : '땡',
+                    value : ''
+                 }); 
+                 this.input.focus(); 
+            }
+           
+        };
+
+        onChange = (e) => {
+            console.log('onChange');
+            this.setState({value : Number(e.target.value)})
+        };
+        
+        onRef = () => {(c) => {this.input = c;}};
+        
+        render(){
+            //데이터가 변경되면(setState함수를 실행하면) 렌더링 함수가 계속 호출됨
+            console.log('렌더링');
+            return(
+                <React.Fragment>
+                    <div>{this.state.first}곱하기{this.state.second}</div>
+                    <form onSubmit={this.onSubmit}>
+                        <p>
+                            <input ref={this.onRef} type="text" onChange={this.onChange} value={this.state.value}/>    
+                        </p>
+                        <button>입력</button>
+                        <p>
+                            <span>{this.state.result}</span>
+                        </p>
+                     </form>
+                </React.Fragment> 
+            );
+        }
+    }
+
+    </script>
+    <script type='text/babel'>
+        ReactDOM.render(<Gugudan />, document.querySelector('#root'));
+    </script>
+
+    </div>
+</body>
+</html> 
